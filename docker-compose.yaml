@@ -6,7 +6,7 @@ services:
     ports:
       - '8080:8080'
     volumes:
-      - ./backends:/app
+      - ./backend:/app
 
   folder-templates-client:
     build: ./client
