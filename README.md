@@ -10,5 +10,5 @@ Docker
 
 ## Apps
 
-- Backend: localhost:8080
-- Client: localhost:3000
+- Backend: http://localhost:8080
+- Client: http://localhost:3000
