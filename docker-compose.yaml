@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  folder-templates-backend:
+    build: ./folder-templates
+    container_name: folder-templates-backend-container
+    ports:
+      - '8080:8080'
+    volumes:
+      - ./folder-templates:/app
+
+  folder-templates-client:
+    build: ./folder-templates-client
+    container_name: folder-templates-client-container
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./folder-templates-client:/app
+    stdin_open: true
+    tty: true

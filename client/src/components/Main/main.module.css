@@ -1,0 +1,10 @@
+.art {
+	width: 15em;
+	height: 15em;
+	fill: var(--color-text-dark);
+}
+
+.text {
+	font-size: 1.3em;
+	color: var(--color-text-light);
+}

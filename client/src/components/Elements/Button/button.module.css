@@ -1,0 +1,36 @@
+.button {
+	display: flex;
+	padding: 0.5em 1em;
+	align-items: center;
+	justify-content: center;
+	border: none;
+	font-size: 1em;
+	color: var(--color-text-light);
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+}
+.button:hover {
+	cursor: pointer;
+}
+
+.blue {
+	background-color: var(--color-dbx-blue-dark);
+}
+.blue:hover {
+	background-color: var(--color-dbx-blue-light);
+}
+
+.gray {
+	background-color: var(--color-dbx-gray-dark);
+}
+.gray:hover {
+	background-color: var(--color-dbx-gray-light);
+}
+
+.icon {
+	display: block;
+	width: 1em;
+	height: 1em;
+	margin-right: 0.5em;
+	fill: var(--color-text-light);
+}

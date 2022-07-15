@@ -1,0 +1,46 @@
+.leftSide {
+	display: flex;
+	align-items: center;
+	width: 50%;
+	justify-content: flex-start;
+}
+
+.rightSide {
+	display: flex;
+	align-items: center;
+	width: 50%;
+	justify-content: flex-end;
+	column-gap: 1em;
+}
+
+.projectName {
+	display: inline-block;
+	color: var(--color-dbx-blue-dark);
+	font-size: 1.3em;
+}
+
+.logo:hover,
+.projectName:hover {
+	cursor: pointer;
+}
+
+.beta {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 3em;
+	height: 1.5em;
+	margin-left: 0.5em;
+	border-radius: 2em;
+	background-color: var(--color-border);
+	color: var(--color-text-dark);
+}
+
+.navLink {
+	text-decoration: none;
+	font-size: 1em;
+	color: var(--color-text-light);
+}
+.navLink:hover {
+	text-decoration: underline;
+}

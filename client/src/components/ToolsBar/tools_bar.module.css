@@ -1,0 +1,19 @@
+.leftSide {
+	display: flex;
+	align-items: center;
+	width: 50%;
+	justify-content: flex-start;
+}
+
+.rightSide {
+	display: flex;
+	align-items: center;
+	width: 50%;
+	justify-content: flex-end;
+	column-gap: 1em;
+}
+
+.tagline {
+	font-size: 2em;
+	color: var(--color-text-light);
+}
