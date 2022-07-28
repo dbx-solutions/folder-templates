@@ -9,26 +9,11 @@ export default function Nav() {
 			<div className={styles.leftSide}>
 				<span className={styles.logo}> {Icon.logo}</span>
 
-				<span className={styles.projectName}>Solutions Accelerators</span>
+				<span className={styles.projectName}>KIND Virtual Lockers</span>
 				<span className={styles.beta}>Beta</span>
 			</div>
 
 			<div className={styles.rightSide}>
-				<a
-					href="https://dbx-solutions.github.io/dsx/"
-					target="_blank"
-					className={styles.navLink}
-				>
-					Documentation
-				</a>
-				<a
-					href="https://github.com/dbx-solutions"
-					target="_blank"
-					className={styles.navLink}
-				>
-					Code
-				</a>
-
 				<OAuth />
 			</div>
 		</>

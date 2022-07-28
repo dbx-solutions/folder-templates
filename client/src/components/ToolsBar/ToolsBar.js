@@ -19,7 +19,7 @@ export default function ToolsBar() {
 	return (
 		<>
 			<div className={styles.leftSide}>
-				<span className={styles.tagline}>Folder Templates</span>
+				<span className={styles.tagline}>Virtual Lockers</span>
 			</div>
 
 			<div className={styles.rightSide}>

@@ -42,21 +42,17 @@ export default function FolderStructure() {
 					<div className={styles.artItem}>{Icon.folder}</div>
 					<div className={styles.artItem}>{Icon.relax}</div>
 				</div>
-				<span className={styles.artTagline}>
-					All your folder structures automatically created in seconds
-				</span>
+				<span className={styles.artTagline}>Manage all of your virtual lockers</span>
 			</div>
 
 			<div className={styles.verticalDivider}></div>
 
 			<div className={styles.rightSide}>
-				<span className={styles.formTagline}>
-					Create a project folder structure
-				</span>
+				<span className={styles.formTagline}>Create a virtual locker</span>
 
 				<div className={styles.form}>
 					<div className={styles.control}>
-						<span className={styles.formLabel}>Choose a template</span>
+						<span className={styles.formLabel}>Choose a virtual locker template</span>
 
 						<div className={styles.select}>
 							<select onChange={(e) => setTemplate(e.target.value)}>
@@ -72,22 +68,18 @@ export default function FolderStructure() {
 					</div>
 
 					<div className={styles.control}>
-						<span className={styles.formLabel}>Enter project name</span>
+						<span className={styles.formLabel}>Enter locker name</span>
 
 						<input
 							className={styles.input}
-							placeholder="Project name"
+							placeholder="Locker name"
 							value={folderName}
 							onChange={(e) => setFolderName(e.target.value)}
 						/>
 					</div>
 
 					<div className={styles.buttonContainer}>
-						<Button
-							icon={Icon.plus}
-							caption="Create project"
-							handleOnClick={createFromTemplate}
-						/>
+						<Button icon={Icon.plus} caption="Create virtual locker" handleOnClick={createFromTemplate} />
 					</div>
 				</div>
 			</div>
