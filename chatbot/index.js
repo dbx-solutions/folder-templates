@@ -11,7 +11,23 @@
 // (copy token from DevX getting started page
 // and save it as environment variable into the .env file)
 const token = process.env.WHATSAPP_TOKEN;
-let i = 0;
+
+const STATES = {
+  "GREETING": 0,
+  "TOP_LEVEL_DOC_DECISION": 1,
+  "SELECT_DOCUMENT": 2,
+  "DELIVER_INCOME_DOCUMENT": 3,
+  "DELIVER_POST_RELEASE_DOCUMENT": 4,
+  "DELIVER_HEALTH_DOCUMENT": 5,
+  "DELIVER_SCHOOL_DOCUMENT": 6,
+  "DELIVER_USCIS_DOCUMENT": 7,
+  "DELIVER_PERSONAL_ID_DOCUMENT": 8,
+};
+
+const STATE_NAMES = new Map(Array.from(STATES, a => a.reverse()));
+
+let STATE = STATES.GREETING;
+
 // Imports dependencies and set up http server
 const request = require("request"),
   express = require("express"),
@@ -29,9 +45,69 @@ app.get("/test", (req, res) => {
   res.send("hello there");
 })
 
+const docs = {
+  "Income-based documentation": [
+    "Paystubs"
+  ], 
+  "Health related": [
+    "Hospital discharge plans",
+    "Immunization records",
+    "Health insurance card"
+  ], 
+  "School related": [
+    "Report cards",
+    "IEP plans",
+    "Non-parent affidavit"
+  ], 
+  "USCIS related docs": [
+    "Case status/ receipts notices (I-797)",
+    "OTIP letter"
+  ], 
+  "Personal IDs": [
+    "Driver's license",
+    "Consulate ID",
+    "Copies of passport",
+    "Work permit",
+    "Social security card",
+    "Verification of release form"
+  ], 
+  "Post released docs": [
+    "Medical records",
+    "List of local service providers"
+  ]
+};
+
+function getTopLevelDocsList() {
+  return "1. Income-based documentation\n2. Health related\n3. School related\n4. USCIS related docs\n5. Personal IDs\n6. Post Release Documents";
+}
+
+function getIncomeBasedDocsList() {
+  return "1. Paystubs";
+}
+
+function getHealthRelatedDocsList() {
+  return "1. Hospital discharge plans\n2. Immunization records\n3. Health insurance card";
+}
+
+function getSchoolRelatedDocsList() {
+  return "1. Report cards\n2. IEP plans\n3. Non-parent affidavit";
+}
+
+function getUscisRelatedDocsList() {
+  return "1. Case status/ receipts notices (I-797)\n2. OTIP letter";
+}
+
+function getPersonalIdsDocList() {
+  return "1. Driver's license\n2. Consulate ID\n3. Copies of passport\n4. Work permit\n5. Social security card\n6. Verification of release form";
+}
+
+function getPostReleaseDocsList() {
+  return "1. Medical records\n2. List of local service providers";
+ 
+}
+
 // Accepts POST requests at /webhook endpoint
 app.post("/webhook", (req, res) => {
-  console.log("requested!");
   // Parse the request body from the POST
   let body = req.body;
 
@@ -49,27 +125,111 @@ app.post("/webhook", (req, res) => {
       let phone_number_id =
         req.body.entry[0].changes[0].value.metadata.phone_number_id;
       let from = req.body.entry[0].changes[0].value.messages[0].from; // extract the phone number from the webhook payload
-      // let type = req.body.entry[0].changes[0].value.messages[0].type;
-      // if (type === "text") {
-      //   let msg_body = req.body.entry[0].changes[0].value.messages[0].text.body; // extract the message text from the webhook payload
-      // } else if (type === "image") {
-      //   let msg_body = null;
-      // }
-      if (i === 0) {
-        sendMessage(phone_number_id, from, "Hi! How can I help you? Respond with a number...\n1. Get A File\n2. Upload a new file\n3. Share a file");
-        i = 1;
-      } else if(i === 1) {
-        sendMessage(phone_number_id, from, "Ok! Which type of file do you need?\n1. ID\n2. School Report\n3. Medical Document");
-        i = 2;
-      } else if(i === 2) {
-        sendMessage(phone_number_id, from, "You selected ID. Here's what you have uploaded in the past\n1. Passport\n2. New York License\n3. Birth Certificate");
-        i = 3
-      } else if(i === 3) {
-        sendMessage(phone_number_id, from, "Here is your New York License!");
-        sendMessage(phone_number_id, from, "TODO: Figure out images...");
-        i = 0;
+      console.log("STATE: " + STATE);
+      if (STATE === STATES.GREETING) {
+        sendMessage(phone_number_id, from, getTopLevelDocsList());
+        console.log("Sent greeting");
+        STATE = STATES.TOP_LEVEL_DOC_DECISION;
+      } else if(STATE === STATES.TOP_LEVEL_DOC_DECISION) {
+        let msg_body = req.body.entry[0].changes[0].value.messages[0].text.body;
+        STATE = STATES.GREETING;
+        let msg = "Sorry, that doesn't seem to be one of the available options. Please start again.";
+        if (msg_body === "1") {
+          msg = getIncomeBasedDocsList();
+          STATE = STATES.DELIVER_INCOME_DOCUMENT;
+        } else if (msg_body === "2") {
+          msg = getHealthRelatedDocsList();
+          STATE = STATES.DELIVER_HEALTH_DOCUMENT;
+        } else if (msg_body === "3") {
+          msg = getSchoolRelatedDocsList();
+          STATE = STATES.DELIVER_SCHOOL_DOCUMENT;
+        } else if (msg_body === "4") {
+          msg = getUscisRelatedDocsList();
+          STATE = STATES.DELIVER_USCIS_DOCUMENT;
+        } else if (msg_body === "5") {
+          msg = getPersonalIdsDocList();
+          STATE = STATES.DELIVER_PERSONAL_ID_DOCUMENT;
+        } else if (msg_body === "6") {
+          msg = getPostReleaseDocsList();
+          STATE = STATES.DELIVER_POST_RELEASE_DOCUMENT;
+        } else {
+          STATE = STATES.GREETING;
+        }
+        sendMessage(phone_number_id, from, msg);
+      } else if(STATE === STATES.DELIVER_INCOME_DOCUMENT) {
+        let msg_body = req.body.entry[0].changes[0].value.messages[0].text.body;
+        STATE = STATES.GREETING;
+        let msg = "Sorry, we couldn't find that document, please respond with just a number";
+        if (msg_body === "1") {
+          msg = "getting paystubs";
+        }
+        sendMessage(phone_number_id, from, msg);
+      } else if (STATE === STATES.DELIVER_HEALTH_DOCUMENT) {
+        let msg_body = req.body.entry[0].changes[0].value.messages[0].text.body;
+        STATE = STATES.GREETING;
+        let msg = "Sorry, we couldn't find that document, please respond with just a number";
+        if (msg_body === "1") {
+          msg = "getting Hostpital discharge plans";
+        } else if (msg_body === "2") {
+          msg = "getting Immunization records";
+        } else if (msg_body === "3") {
+          msg = "getting Health insurance card";
+        }
+        sendMessage(phone_number_id, from, msg);
+      } else if (STATE === STATES.DELIVER_PERSONAL_ID_DOCUMENT) {
+        let msg_body = req.body.entry[0].changes[0].value.messages[0].text.body;
+        STATE = STATES.GREETING;
+        let msg = "Sorry, we couldn't find that document, please respond with just a number";
+        if (msg_body === "1") {
+          msg = "getting Driver's license";
+        } else if (msg_body === "2") {
+          msg = "getting Consulate ID";
+        } else if (msg_body === "3") {
+          msg = "getting Copies of passport";
+        } else if (msg_body === "4") {
+          msg = "getting work permit";
+        } else if (msg_body === "5") {
+          msg = "getting social security card";
+        } else if (msg_body === "6") {
+          msg = "getting verification of release form";
+        }
+        sendMessage(phone_number_id, from, msg);
+      } else if (STATE === STATES.DELIVER_SCHOOL_DOCUMENT) {
+        let msg_body = req.body.entry[0].changes[0].value.messages[0].text.body;
+        STATE = STATES.GREETING;
+        let msg = "Sorry, we couldn't find that document, please respond with just a number";
+        if (msg_body === "1") {
+          msg = "getting report cards";
+        } else if (msg_body === "2") {
+          msg = "getting IEP plan";
+        } else if (msg_body === "3") {
+          msg = "getting non-parrent affidavit";
+        }
+        sendMessage(phone_number_id, from, msg);
+      } else if (STATE === STATES.DELIVER_USCIS_DOCUMENT) {
+        let msg_body = req.body.entry[0].changes[0].value.messages[0].text.body;
+        STATE = STATES.GREETING;
+        let msg = "Sorry, we couldn't find that document, please respond with just a number";
+        if (msg_body === "1") {
+          msg = "getting Case status/recepts notices (I-797)";
+        } else if (msg_body === "2") {
+          msg = "getting OTIP letter";
+        }
+        sendMessage(phone_number_id, from, msg);
+      } else if (STATE === STATES.DELIVER_POST_RELEASE_DOCUMENT) {
+        let msg_body = req.body.entry[0].changes[0].value.messages[0].text.body;
+        STATE = STATES.GREETING;
+        let msg = "Sorry, we couldn't find that document, please respond with just a number";
+        if (msg_body === "1") {
+          msg = "getting medical records";
+        } else if (msg_body === "2") {
+          msg = "getting list of social service providers";
+        }
+        sendMessage(phone_number_id, from, msg);
       }
       res.sendStatus(200);
+      console.log("Sent status 200");
+      console.log("Next state: " + STATE);
     } else {
       // Return a '404 Not Found' if event is not from a WhatsApp API
       res.sendStatus(404);
