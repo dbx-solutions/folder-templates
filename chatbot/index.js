@@ -12,6 +12,8 @@
 // and save it as environment variable into the .env file)
 const token = process.env.WHATSAPP_TOKEN;
 
+const DBX_ACCESS_TOKEN = "sl.BMR3yG5Sc-UzIX3fQdwohXzyrhDxihRuJNFm9GmIY2cDe-0iNxoFgnUdb6Cjsu7Wi7HBiL11hJ8oX_NxqFW-3dxjjNXct4mcC7meUXPgtLPbSNLl8k5ooR_WQSFN_r6mu-1ICCp4_mTM";
+
 const STATES = {
   "GREETING": 0,
   "TOP_LEVEL_DOC_DECISION": 1,
@@ -33,6 +35,7 @@ const request = require("request"),
   express = require("express"),
   body_parser = require("body-parser"),
   axios = require("axios").default,
+  dbx = require("dropbox"),
   app = express().use(body_parser.json()); // creates express http server
 
 const port = process.env.PORT || 1337;
@@ -111,6 +114,7 @@ app.post("/webhook", (req, res) => {
   // Parse the request body from the POST
   let body = req.body;
 
+
   // info on WhatsApp text message payload: https://developers.facebook.com/docs/whatsapp/cloud-api/webhooks/payload-examples#text-messages
   if (req.body.object) {
     if (
@@ -161,7 +165,8 @@ app.post("/webhook", (req, res) => {
         STATE = STATES.GREETING;
         let msg = "Sorry, we couldn't find that document, please respond with just a number";
         if (msg_body === "1") {
-          msg = "getting paystubs";
+
+          msg = "";
         }
         sendMessage(phone_number_id, from, msg);
       } else if (STATE === STATES.DELIVER_HEALTH_DOCUMENT) {
@@ -181,7 +186,7 @@ app.post("/webhook", (req, res) => {
         STATE = STATES.GREETING;
         let msg = "Sorry, we couldn't find that document, please respond with just a number";
         if (msg_body === "1") {
-          msg = "getting Driver's license";
+          msg = "License-Front: https://www.dropbox.com/s/olpuhnrkm1blo7e/License-front.jpeg?dl=0\nLicense-Back: https://www.dropbox.com/s/curcnyltmxqkr23/License-back.jpeg?dl=0";
         } else if (msg_body === "2") {
           msg = "getting Consulate ID";
         } else if (msg_body === "3") {
@@ -236,6 +241,24 @@ app.post("/webhook", (req, res) => {
     }
   }
 });
+
+function getDropboxInstance() {
+
+  let dbx_config = {
+    accessToken: DBX_ACCESS_TOKEN,
+  };
+
+  let _dbx = new dbx.Dropbox(dbx_config);
+
+  return _dbx;
+}
+
+function getDbxObj() {
+	let this_dbx = getDropboxInstance();
+  const response = this_dbx.list
+	const members = response.result.members;
+  console.log(members);
+}
 
 function sendMessage(phone_number_id, from, message) {
   axios({
